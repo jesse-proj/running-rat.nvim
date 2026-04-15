@@ -1,6 +1,6 @@
 local M = {}
 M.ducks_list = {}
-local conf = {character="🦆", speed=10, width=2, height=1, color="none", blend=100}
+local conf = {character="ᓚᘏᕐᐷ", speed=10, width=4, height=1, color="none", blend=100}
 
 -- TODO: a mode to wreck the current buffer?
 local waddle = function(duck, speed)

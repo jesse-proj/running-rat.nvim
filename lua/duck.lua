@@ -1,17 +1,17 @@
 local M = {}
-M.ducks_list = {}
+M.rats_list = {}
 local conf = {character="ᓚᘏᕐᐷ", speed=10, width=4, height=1, color="#a89732", blend=100}
 
 -- TODO: a mode to wreck the current buffer?
-local waddle = function(duck, speed)
+local scurry = function(rat, speed)
     local timer = vim.loop.new_timer()
-    local new_duck = { name = duck, timer = timer }
-    table.insert(M.ducks_list, new_duck)
+    local new_rat = { name = rat, timer = timer }
+    table.insert(M.rats_list, new_rat)
 
-    local waddle_period = 1000 / (speed or conf.speed)
-    vim.loop.timer_start(timer, 1000, waddle_period, vim.schedule_wrap(function()
-        if vim.api.nvim_win_is_valid(duck) then
-            local config = vim.api.nvim_win_get_config(duck)
+    local scurry_period = 1000 / (speed or conf.speed)
+    vim.loop.timer_start(timer, 1000, scurry_period, vim.schedule_wrap(function()
+        if vim.api.nvim_win_is_valid(rat) then
+            local config = vim.api.nvim_win_get_config(rat)
             local col, row = 0, 0
             if vim.version().minor < 10 then -- Neovim 0.9
                 col, row = config["col"][false], config["row"][false]
@@ -19,7 +19,7 @@ local waddle = function(duck, speed)
                 col, row = config["col"], config["row"]
             end
 
-            math.randomseed(os.time()*duck)
+            math.randomseed(os.time() * rat)
             local angle = 2 * math.pi * math.random()
             local s = math.sin(angle)
             local c = math.cos(angle)
@@ -43,7 +43,7 @@ local waddle = function(duck, speed)
             config["row"] = row + 0.5 * s
             config["col"] = col + 1 * c
 
-            vim.api.nvim_win_set_config(duck, config)
+            vim.api.nvim_win_set_config(rat, config)
         end
     end))
 end
@@ -52,38 +52,38 @@ M.hatch = function(character, speed, color)
     local buf = vim.api.nvim_create_buf(false, true)
     vim.api.nvim_buf_set_lines(buf , 0, 1, true , {character or conf.character})
 
-    local duck = vim.api.nvim_open_win(buf, false, {
+    local rat = vim.api.nvim_open_win(buf, false, {
         relative='cursor', style='minimal', row=1, col=1, width=conf.width, height=conf.height
     })
-    vim.cmd("hi Duck"..duck.." guifg=" .. (color or conf.color) .. " guibg=none blend=" .. conf.blend)
-    vim.api.nvim_win_set_option(duck, 'winhighlight', 'Normal:Duck'..duck)
+    vim.cmd("hi Rat"..rat.." guifg=" .. (color or conf.color) .. " guibg=none blend=" .. conf.blend)
+    vim.api.nvim_win_set_option(rat, 'winhighlight', 'Normal:Rat'..rat)
 
-    waddle(duck, speed)
+    scurry(rat, speed)
 end
 
 M.cook = function()
-    local last_duck = M.ducks_list[#M.ducks_list]
+    local last_rat = M.rats_list[#M.rats_list]
 
-    if not last_duck then
-        vim.notify("No ducks to cook!")
+    if not last_rat then
+        vim.notify("No rats to catch!")
         return
     end
 
-    local duck = last_duck['name']
-    local timer = last_duck['timer']
-    table.remove(M.ducks_list, #M.ducks_list)
+    local rat = last_rat['name']
+    local timer = last_rat['timer']
+    table.remove(M.rats_list, #M.rats_list)
     timer:stop()
 
-    vim.api.nvim_win_close(duck, true)
+    vim.api.nvim_win_close(rat, true)
 end
 
 M.cook_all = function()
-    if #M.ducks_list <= 0 then
-        vim.notify("No ducks to cook!")
+    if #M.rats_list <= 0 then
+        vim.notify("No rats to catch!")
         return
     end
 
-    while (#M.ducks_list > 0) do
+    while (#M.rats_list > 0) do
         M.cook()
     end
 end
